@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Finite State Project</title>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+	<nav class="navbar navbar-dark bg-dark">
+	  <a class="navbar-brand" href="#">Finite State Automata</a>
+		<span class="navbar-text">
+      Joseph Rela
+    </span>
+	</nav>
+
+	<br><br>
+
+	<div class="container">
+
+		<div class='row'>
+			<div class='col-sm-3'></div>
+			<div class='col-md-6'>
+				<div class="input-group mb-3">
+				  <div class="custom-file" id="fileDiv">
+				    <input type="file" class="custom-file-input" accept='text/plain' id="fileSub" onchange='openFile(event)'>
+						<label class="custom-file-label" for="customFile" id="fileDialBox">Choose file</label>
+				  </div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-sm-3"></div>
+			<div class="col-md-6">
+				<div class="input-group mb-3" id="myForm" style="visibility: hidden;">
+				  <input type="text" name="inStr" id="inText" class="form-control" placeholder="Input string..." aria-label="Input String" aria-describedby="basic-addon2">
+				  <div class="input-group-append">
+				    <button class="btn btn-outline-secondary" type="button" onclick="checkStr()" value="Submit">Check</button>
+				  </div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class='col-sm-2'></div>
+			<div class="col-md-4">
+				<div class="card" id='output' style="width: 18rem; visibility: hidden">
+					<ul class="list-group list-group-flush" id="outputList">
+					</ul>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card" id='results' style="width: 28rem; visibility: hidden">
+					<div class="card-header">
+						Results
+					</div>
+					<ul class="list-group list-group-flush" id="resultList">
+					</ul>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src="./script.js" style="display:inline;"></script>
+</body>
+</html>
