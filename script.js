@@ -1,15 +1,17 @@
 var list = [];
 var lines;
-var startState;
-var accState = [];
+var startState = 1;
+var accState = 2;
 var currState = [];
 var nextState = [];
+var replaceChar = [];
+var direction = [];
 var inChar = [];
 var state;
-
+var title = ['RULES', 'Start State: 1', 'Accepting State: 2'];
+var modString;
 var openFile = function(event) {
   // clear out variables
-  accState = [];
   currState = [];
   nextState = [];
   inChar = [];
@@ -21,11 +23,25 @@ var openFile = function(event) {
   var input = event.target;
   var reader = new FileReader();
   reader.onload = function(){
-    console.log(event);
+
     var text = reader.result;
     var node = document.getElementById('output');
 
     lines = reader.result.split('\n');
+    lines = lines.filter(function(n){return n != '\r'});
+    var reAcc = /(accept*)/i;
+    lines = lines.filter(function(m){
+      return !(m.match(reAcc));
+    });
+
+    // populate rules display
+    for (var i = 0; i < title.length; i++){
+      listTitle = document.createElement("li");
+      listTitle.classList.add("list-group-item");
+      listTitle.appendChild(document.createTextNode(title[i]));
+      document.getElementById('outputList').appendChild(listTitle);
+    }
+
 
     for (var line = 0; line < lines.length; line++) {
         var li = document.createElement("li");
@@ -35,38 +51,14 @@ var openFile = function(event) {
         list.push(lines[line]);
     }
 
-    // find starting state
-    var r0 = new RegExp(/\d+/g);
-    var s0 = list[0];
-    startState = r0.exec(s0)[0];
-
-    // find accepting state
-    var r1 = new RegExp(/\d+/g);
-    var s1 = list[1];
-    var resp1;
-    while ((resp1 = r1.exec(s1)) != null) {
-      accState.push(resp1[0]);
+    //populate rules
+    for (var i = 0; i < list.length; i++){
+      currState.push(list[i][2]);
+      inChar.push(list[i][4]);
+      nextState.push(list[i][8]);
+      replaceChar.push(list[i][10]);
+      direction.push(list[i][12]);
     }
-
-    // find currState && nextState && inChar
-    var r2 = new RegExp(/[a-z]/);
-    var resp2;
-    for (var i = 3; i < list.length; i++){
-      while ((resp2 = r1.exec(list[i])) != null){
-        //console.log(resp2);
-        if(currState.length == nextState.length){
-          currState.push(resp2[0]);
-        }else{
-          nextState.push(resp2[0]);
-        }
-      }
-    }
-
-    // find input characters
-    for (var i = 3; i < list.length; i++){
-      inChar.push(r2.exec(list[i])[0]);
-    }
-
   };
 
   // free up memory and display input box and rules list
@@ -82,18 +74,28 @@ var checkStr = function(){
   // clear out list each time
   document.getElementById('resultList').innerHTML = '';
 
-  // check if input string is successful
+  // TURING MACHINE
   state = startState;
   var success = false;
-  for (var j = 0; j < inStr.length; j++){
+  var cntr = 0;
+  modString = inStr.split('');
+
+  for (var j = 0; j < modString.length; ++j){
     var valid = false;
+    console.log(j);
+    if(cntr > 100){break;}
     for (var k = 0; k < currState.length; k++){
-      if(state == currState[k] && inStr[j] == inChar[k]){
+      if(state == currState[k] && modString[j] == inChar[k]){
         var li = document.createElement("li");
         li.classList.add("list-group-item");
-        li.appendChild(document.createTextNode('read character: ' + inStr[j] + ' || current state: ' + state + ' || rule: ' + lines[k + 3]));
+        li.appendChild(document.createTextNode('read character: ' + modString[j] + ' || current state: ' + state + ' || rule: ' + lines[k] ));
         document.getElementById('resultList').appendChild(li);
+        modString[j] = replaceChar[k];
         state = nextState[k];
+        cntr += 1;
+        if(direction[k] == 'L'){
+          j -= 2;
+        }
         valid = true;
         k = currState.length;
       }
@@ -104,21 +106,27 @@ var checkStr = function(){
   // add success or failure to bottom of the results
   var li = document.createElement("li");
 
+  // if process runs 1000 times, fail on infinite loop
+  if (cntr > 100){
+    li.classList.add("list-group-item");
+    li.classList.add("list-group-item-danger");
+    li.appendChild(document.createTextNode('Infinite Loop Detected!'));
+    document.getElementById('resultList').appendChild(li);
+  }
+
   if(valid){
-    for (var l = 0; l < accState.length; l++){
-      if (state == accState[l]) success = true;
-    }
+    if (state == accState) success = true;
   }
 
   if (success){
     li.classList.add("list-group-item");
     li.classList.add("list-group-item-success");
-    li.appendChild(document.createTextNode('Success!'));
+    li.appendChild(document.createTextNode('Final String ' + modString.join('') + ' Accepted!'));
     document.getElementById('resultList').appendChild(li);
   } else {
     li.classList.add("list-group-item");
     li.classList.add("list-group-item-danger");
-    li.appendChild(document.createTextNode('Input String Failed'));
+    li.appendChild(document.createTextNode('Final String ' + modString.join('') + ' Rejected'));
     document.getElementById('resultList').appendChild(li);
   }
 }
